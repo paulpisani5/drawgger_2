@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap">
+    <title>Style Transfer Result</title>
+    <style>
+      .col-md-3 {
+          padding-left: 20px;
+          padding-right: 20px;
+          margin-bottom: 15px;  /* Adjusting this ensures the vertical spacing matches the horizontal spacing */
+      }
+      .image img {
+          height: 250px;
+          width: 100%;
+          transition: 0.3s;
+          border-radius: 5px;
+          margin: auto;
+      }
+      .image:hover img {
+          filter: brightness(0.7);
+      }
+      .image .like-btn, .image .download-btn {
+          display: none;
+          position: absolute;
+          z-index: 10;
+          color: white;
+          font-size: 12px;
+          background-color: rgba(119, 136, 153, 0.7);
+          border: none;
+          padding: 6px 10px;
+          border-radius: 4px;  /* Adds rounded edges */
+          transition: background-color 0.3s; /* Smooth transition for hover effect */
+      }
+      .image .download-btn {
+          bottom: 15px;  /* Adjusted the positioning */
+          right: 15px;
+      }
+      .image .like-btn {
+          content: "\2661";  /* Unicode for hollow heart shape */
+          color: white;
+          bottom: 15px;  /* Adjusted the positioning */
+          left: 15px;
+      }
+      .image .like-btn.liked {
+          content: "\2764";  /* Unicode for filled heart shape */
+          color: white;
+      }
+      .image:hover .download-btn, .image:hover .like-btn {
+          display: block;
+      }
+      .image {
+          padding: 10px;
+          position: relative;
+      }
+      body {
+          font-family: 'Lato', sans-serif;
+      }
+  </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Results</h2>
+        <br>
+        <div class="row">
+        {% for _, transformed_filename in styled_images %}
+            <div class="col-md-3 mb-1 image">
+                <img src="{{ url_for('send_styled', filename=transformed_filename) }}" alt="Stylized Image" class="img-fluid">
+                <a href="{{ url_for('send_styled', filename=transformed_filename) }}" download class="download-btn"><i class="fa-regular fa-circle-down"></i></a>
+                <button class="btn like-btn">♡</button>
+            </div>
+        {% endfor %}
+        </div>
+
+        <a href="{{ url_for('index') }}" class="mt-4 d-block">Go back</a>
+        <br>
+        <br>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        let likeButtons = document.querySelectorAll('.like-btn');
+        let downloadButtons = document.querySelectorAll('.download-btn');
+
+        // Like button behavior
+        likeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (btn.classList.contains('liked')) {
+                    btn.textContent = '♡';
+                    btn.classList.remove('liked');
+                } else {
+                    btn.textContent = '♥';
+                    btn.classList.add('liked');
+                }
+            });
+
+            btn.addEventListener('mouseover', function() {
+                btn.textContent = '♥';
+            });
+
+            btn.addEventListener('mouseout', function() {
+                if (!btn.classList.contains('liked')) {
+                    btn.textContent = '♡';
+                }
+            });
+        });
+
+        // Download button behavior
+        downloadButtons.forEach(btn => {
+            let icon = btn.querySelector('i');  // Find the Font Awesome icon inside the download button
+
+            btn.addEventListener('mouseover', function() {
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+            });
+
+            btn.addEventListener('mouseout', function() {
+                icon.classList.remove('fa-solid');
+                icon.classList.add('fa-regular');
+            });
+        });
+    });
+    </script>
+</body>
+</html>
